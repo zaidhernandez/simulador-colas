@@ -9,7 +9,8 @@ package simuladorcolas;
 public class Main {
 
     public static void main(String[] args) {
-        // TODO code application logic here
+        Interfaz pantalla = new Interfaz();
+        pantalla.setVisible(true);
     }
 
 }
