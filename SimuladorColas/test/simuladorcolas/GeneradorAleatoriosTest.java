@@ -50,8 +50,8 @@ public class GeneradorAleatoriosTest {
             suma += GeneradorAleatorios.nextUniforme();
         }
         suma /=1000;
-        System.out.println(Math.abs(suma - 1/2));
-        assertTrue(Math.abs(suma - 1/2) < 2/12);
+        System.out.println("diferencia de media real y teórica (debe tender a cero): " + Math.abs(suma - 1.0/2));
+        assertTrue(Math.abs(suma - 1.0/2) < 2.0/12); // la media menos miy (0.5) debe ser menor que dos veces la varianza
     }
 
     /**
@@ -67,11 +67,7 @@ public class GeneradorAleatoriosTest {
         {
             salio = GeneradorAleatorios.nextUniforme(1000);
             resultados[salio]++;
-            System.out.println("Salió un: " + salio);
-        }
-        for(int i = 0; i < 1000; ++i)
-        {
-            System.out.println(resultados[i]);
+            //System.out.println("Salió un: " + salio);
         }
     }
 
@@ -86,7 +82,8 @@ public class GeneradorAleatoriosTest {
         double result = instance.nextExponencial();
         assertEquals(expResult, result, 0.0);
         // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        //fail("The test case is a prototype.");
+        
     }
 
 }
