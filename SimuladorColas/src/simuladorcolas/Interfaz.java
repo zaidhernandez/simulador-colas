@@ -41,12 +41,15 @@ public class Interfaz extends javax.swing.JFrame {
     public Interfaz() {
         initComponents();
         this.setResizable(false);
+        
         // Se obtienen las dimensiones en pixels de la pantalla.
         Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
 
         // Una cuenta para situar la ventana en el centro de la pantalla.
         setLocation((pantalla.width  - getSize().width) / 2,
                     (pantalla.height - getSize().height)/ 2);
+        
+        porcentajeLleno.setStringPainted(true);
     }
 
     /** This method is called from within the constructor to
@@ -159,8 +162,9 @@ public class Interfaz extends javax.swing.JFrame {
     private void comenzarSimulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comenzarSimulActionPerformed
         setContadorDentro(getContadorDentro()+1);
         setContadorEspera(getContadorEspera()+1);
-        cantDentro.setText(""+getContadorDentro());
-        cantEspera.setText(""+getContadorEspera());
+        cantDentro.setText(Integer.toString(+getContadorDentro()));
+        cantEspera.setText(Integer.toString(getContadorEspera()));
+        porcentajeLleno.setValue(Integer.parseInt(cantDentro.getText()));
 
     }//GEN-LAST:event_comenzarSimulActionPerformed
 
@@ -169,6 +173,7 @@ public class Interfaz extends javax.swing.JFrame {
         setContadorEspera(getContadorEspera()-1);
         cantDentro.setText(""+getContadorDentro());
         cantEspera.setText(""+getContadorEspera());
+        porcentajeLleno.setValue(Integer.parseInt(cantDentro.getText()));
     }//GEN-LAST:event_detenerSimulActionPerformed
 
 
