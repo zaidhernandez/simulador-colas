@@ -20,32 +20,32 @@ public class Simulador
     /**
      * Tiempo de llegada esperado de los clientes tipo 1
      */
-    private final long lambda1;
+    private final double lambda1;
     /**
      * Tiempo de llegada esperado de los clientes tipo 2
      */
-    private final long lambda2;
+    private final double lambda2;
     /**
      * Tiempo de llegada esperado de los clientes tipo 3
      */
-    private final long lambda3;
+    private final double lambda3;
     /**
      * Tiempo de atención esperado de los 3 tipos de cliente
      */
-    private final long miu;
+    private final double miu;
     /**
      * En cada momento de la simulación, indica el tiempo actual
      */
-    private long horaSimulacion; //TM
+    private double horaSimulacion; //TM
     /**
      * Indica el tiempo que falta para la siguiente llegada (en cierta unidad)
      */
-    private long tiempoProximaLlegada; //AT
+    private double tiempoProximaLlegada; //AT
     /**
      * Indica el tiempo faltante para la siguiente salida (en la misma unidad
      * que tiempoProximaLlegada)
      */
-    private long tiempoProximaSalida; //DT
+    private double tiempoProximaSalida; //DT
     /**
      * Si true, el servidor puede atender de inmediato al primero en la cola
      * (o el próximo en llegar, si la cola está vacía). Si false, significa
@@ -60,7 +60,7 @@ public class Simulador
     /**
      * Tiempo en el que se acaba la simulación
      */
-    private final long tiempoLimiteSimulacion; // MX
+    private final double tiempoLimiteSimulacion; // MX
     /**
      * Arreglo de listas, una para cada tipo de cliente. La i-ésima lista
      * contiene el tiempo que esperó cada cliente tipo i en el sistema para ser
@@ -72,6 +72,15 @@ public class Simulador
      * durante la simulación
      */
     private ArrayList<Integer> longitudesCola;
+    /**
+     * Lista con los clientes en la cola y en el sistema. La cabeza de la cola
+     * representa al cliente siendo atendido.
+     */
+    private ArrayList<Cliente> cola;
+    /**
+     * Generador de números aleatorios
+     */
+    private final GeneradorAleatorios generador;
 
     /**
      * Crea un nuevo objeto Simulador indicando la media de los tiempos de
@@ -82,7 +91,7 @@ public class Simulador
      * @param l3 tiempo esperado de llegada de los clientes de tipo 3
      * @param t tiempo que tardará la simulación
      */
-    public Simulador(long l1, long l2, long l3, long m, long t)
+    public Simulador(double l1, double l2, double l3, double m, double t)
     {
         this.lambda1 = l1;
         this.lambda2 = l2;
@@ -98,12 +107,88 @@ public class Simulador
         for(int i = 0; i < 3; ++i)
             tiemposEspera[i] = new ArrayList<Long>();
         this.longitudesCola = new ArrayList<Integer>();
+        this.cola = new ArrayList<Cliente>();
+        this.generador = new GeneradorAleatorios();
+        generador.setSemilla(System.currentTimeMillis());
     }
     /**
      * Inicia la simulación
      */
     public void simular()
     {
+        //generar tiempos de llegada
+        double llegada1 = this.generador.nextExponencial(this.lambda1);
+        double llegada2 = this.generador.nextExponencial(this.lambda2);
+        double llegada3 = this.generador.nextExponencial(this.lambda3);
+        EL_MENOR menor = this.getMenor(llegada1, llegada2, llegada3);
+        do
+        {
+            switch(menor)//decidir cuál es el próximo evento
+            {
+                case PROXIMA_SALIDA:
+                    //TODO manejar lógica cuando hay una salida
+                    break;
+                case LLEGADA_CLIENTE1:
+                    //TODO encargarse del evento de llegar un cliente tipo 1
+                    break;
+                case LLEGADA_CLIENTE2:
+                    //TODO encargarse del evento de llegar un cliente tipo 2
+                    break;
+                case LLEGADA_CLIENTE3:
+                    //TODO encargarse del evento de llegar un cliente tipo 3
+                    break;
+            }
+        }while(this.horaSimulacion < this.tiempoLimiteSimulacion);
         //TODO lógica de la simulación
+    }
+    enum EL_MENOR {PROXIMA_SALIDA, LLEGADA_CLIENTE1, LLEGADA_CLIENTE2, LLEGADA_CLIENTE3};
+    private EL_MENOR getMenor(double l1, double l2, double l3)
+    {
+        EL_MENOR resultado = EL_MENOR.PROXIMA_SALIDA;
+        double menor = this.tiempoProximaSalida;
+        if(l1 < menor)
+        {
+            menor = l1;
+            resultado = EL_MENOR.LLEGADA_CLIENTE1;
+        }
+        if(l2 < menor)
+        {
+            menor = l2;
+            resultado = EL_MENOR.LLEGADA_CLIENTE2;
+        }
+        if(l3 < menor)
+        {
+            resultado = EL_MENOR.LLEGADA_CLIENTE3;
+        }
+        return resultado;
+    }
+    /**
+     * Esta clase abstrae las propiedades de un cliente. Básicamente el tiempo
+     * que lleva en el sistema y el tipo. Para esta segunda propiedad, esta
+     * clase define una enum pública llamada TIPO.
+     */
+    static class Cliente
+    {
+        public enum TIPO {UNO, DOS, TRES};
+        TIPO tipo;
+        private long tiempo;
+
+        public Cliente(TIPO t)
+        {
+            this.tipo = t;
+            this.tiempo = 0;
+        }
+        /**
+         * Incrementa el tiempo del cliente
+         * @param t incremento del tiempo del cliente
+         */
+        public void actualizarTiempo(long t)
+        {
+            this.tiempo += t;
+        }
+        public long getTiempo()
+        {
+            return this.tiempo;
+        }
     }
 }
