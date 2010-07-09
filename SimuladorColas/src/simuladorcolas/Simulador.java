@@ -38,25 +38,12 @@ public class Simulador
      */
     private double horaSimulacion; //TM
     /**
-     * Indica el tiempo que falta para la siguiente llegada (en cierta unidad)
-     */
-    private double tiempoProximaLlegada; //AT
-    /**
-     * Indica el tiempo faltante para la siguiente salida (en la misma unidad
-     * que tiempoProximaLlegada)
-     */
-    private double tiempoProximaSalida; //DT
-    /**
      * Si true, el servidor puede atender de inmediato al primero en la cola
      * (o el próximo en llegar, si la cola está vacía). Si false, significa
      * que el servidor está ocupado. Mientras el servidor se mantenga así, todo
      * cliente que llegue tendrá que esperar
      */
     private boolean servidorDisponible; // SS
-    /**
-     * En cada momento de la simulación, indica el número de clientes en la cola
-     */
-    private int longitudCola; // WL
     /**
      * Tiempo en el que se acaba la simulación
      */
@@ -97,11 +84,8 @@ public class Simulador
         this.lambda2 = l2;
         this.lambda3 = l3;
         this.miu = m;
-        //this.horaSimulacion = 0;
-        this.tiempoProximaLlegada = 0;
-        this.tiempoProximaSalida = Long.MAX_VALUE;
+        this.horaSimulacion = 0;
         this.servidorDisponible = true;
-        this.longitudCola = 0;
         this.tiempoLimiteSimulacion = t;
         this.tiemposEspera = new ArrayList[3];
         for(int i = 0; i < 3; ++i)
@@ -120,32 +104,66 @@ public class Simulador
         double llegada1 = this.generador.nextExponencial(this.lambda1);
         double llegada2 = this.generador.nextExponencial(this.lambda2);
         double llegada3 = this.generador.nextExponencial(this.lambda3);
-        EL_MENOR menor = this.getMenor(llegada1, llegada2, llegada3);
+        double tiempoSalida = Long.MAX_VALUE;
+        EL_MENOR menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
+        Cliente cliente = null;
         do
         {
-            switch(menor)//decidir cuál es el próximo evento
+            if(menor == EL_MENOR.PROXIMA_SALIDA)
             {
-                case PROXIMA_SALIDA:
-                    //TODO manejar lógica cuando hay una salida
-                    break;
-                case LLEGADA_CLIENTE1:
-                    //TODO encargarse del evento de llegar un cliente tipo 1
-                    break;
-                case LLEGADA_CLIENTE2:
-                    //TODO encargarse del evento de llegar un cliente tipo 2
-                    break;
-                case LLEGADA_CLIENTE3:
-                    //TODO encargarse del evento de llegar un cliente tipo 3
-                    break;
+                this.horaSimulacion += tiempoSalida;
+                this.actualizarTiempoClientes(tiempoSalida);
+                //TODO manejar lógica cuando hay una salida
+            }
+            else
+            {
+                switch(menor)//decidir cuál es el próximo evento
+                {
+                    case LLEGADA_CLIENTE1:
+                        this.horaSimulacion += llegada1;
+                        this.actualizarTiempoClientes(llegada1);
+                        cliente = new Cliente(Cliente.TIPO.UNO);
+                        break;
+                    case LLEGADA_CLIENTE2:
+                        //TODO encargarse del evento de llegar un cliente tipo 2
+                        break;
+                    case LLEGADA_CLIENTE3:
+                        //TODO encargarse del evento de llegar un cliente tipo 3
+                        break;
+                }
+                if(this.servidorDisponible)
+                {
+                    this.cola.add(0, cliente);
+                    this.servidorDisponible = false;
+                    tiempoSalida = this.generador.nextExponencial(this.miu);
+                }
+                else
+                {
+                    this.cola.add(cliente);
+                }
+
+                llegada1 = this.generador.nextExponencial(this.lambda1);
+                llegada2 = this.generador.nextExponencial(this.lambda2);
+                llegada3 = this.generador.nextExponencial(this.lambda3);
+                tiempoSalida = Long.MAX_VALUE;
+                menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
+                //TODO generar siguiente llegada
             }
         }while(this.horaSimulacion < this.tiempoLimiteSimulacion);
         //TODO lógica de la simulación
     }
     enum EL_MENOR {PROXIMA_SALIDA, LLEGADA_CLIENTE1, LLEGADA_CLIENTE2, LLEGADA_CLIENTE3};
-    private EL_MENOR getMenor(double l1, double l2, double l3)
+    /**
+     * Indica cuál es el menor de entre 4 valores reales
+     * @return
+     * <ul>
+     * <li>EL_MENOR.PROXIMA_SALIDA si tiempoSalida es el menor</li>
+     * <li>EL_MENOR.LLEGADA_CLIENTEi si li es el menor</li>
+     */
+    private EL_MENOR getMenor(double tiempoSalida, double l1, double l2, double l3)
     {
         EL_MENOR resultado = EL_MENOR.PROXIMA_SALIDA;
-        double menor = this.tiempoProximaSalida;
+        double menor = tiempoSalida;
         if(l1 < menor)
         {
             menor = l1;
@@ -163,6 +181,18 @@ public class Simulador
         return resultado;
     }
     /**
+     * Incrementa, en una constante dada, la propiedad tiempo de cada cliente
+     * en el sistema
+     * @param tiempo valor que se suma al tiempo de cada cliente
+     */
+    private void actualizarTiempoClientes(double tiempo)
+    {
+        for(Cliente c : this.cola)
+        {
+            c.actualizarTiempo(tiempo);
+        }
+    }
+    /**
      * Esta clase abstrae las propiedades de un cliente. Básicamente el tiempo
      * que lleva en el sistema y el tipo. Para esta segunda propiedad, esta
      * clase define una enum pública llamada TIPO.
@@ -171,7 +201,7 @@ public class Simulador
     {
         public enum TIPO {UNO, DOS, TRES};
         TIPO tipo;
-        private long tiempo;
+        private double tiempo;
 
         public Cliente(TIPO t)
         {
@@ -182,11 +212,11 @@ public class Simulador
          * Incrementa el tiempo del cliente
          * @param t incremento del tiempo del cliente
          */
-        public void actualizarTiempo(long t)
+        public void actualizarTiempo(double t)
         {
             this.tiempo += t;
         }
-        public long getTiempo()
+        public double getTiempo()
         {
             return this.tiempo;
         }
