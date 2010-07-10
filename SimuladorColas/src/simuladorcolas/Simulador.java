@@ -1,6 +1,7 @@
 package simuladorcolas;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -49,11 +50,11 @@ public class Simulador
      */
     private final double tiempoLimiteSimulacion; // MX
     /**
-     * Arreglo de listas, una para cada tipo de cliente. La i-ésima lista
+     * Conjunto de listas, una para cada tipo de cliente. La i-ésima lista
      * contiene el tiempo que esperó cada cliente tipo i en el sistema para ser
      * atendido
      */
-    private ArrayList<Long>[] tiemposEspera;
+    private HashMap<Cliente.TIPO, ArrayList<Double>> tiemposEspera;
     /**
      * Lista con la longitud de la cola al momento de cada llegada y cada salida
      * durante la simulación
@@ -69,6 +70,10 @@ public class Simulador
      */
     private final GeneradorAleatorios generador;
 
+    private double longitudEsperadaCola;
+    private double tiempoEsperaMedio1;
+    private double tiempoEsperaMedio2;
+    private double tiempoEsperaMedio3;
     /**
      * Crea un nuevo objeto Simulador indicando la media de los tiempos de
      * llegada para cada cliente, la media del tiempo de atención y el tiempo
@@ -87,13 +92,16 @@ public class Simulador
         this.horaSimulacion = 0;
         this.servidorDisponible = true;
         this.tiempoLimiteSimulacion = t;
-        this.tiemposEspera = new ArrayList[3];
-        for(int i = 0; i < 3; ++i)
-            tiemposEspera[i] = new ArrayList<Long>();
+        this.tiemposEspera = new HashMap<Cliente.TIPO, ArrayList<Double>>();
+        tiemposEspera.put(Cliente.TIPO.UNO, new ArrayList<Double>());
+        tiemposEspera.put(Cliente.TIPO.DOS, new ArrayList<Double>());
+        tiemposEspera.put(Cliente.TIPO.TRES, new ArrayList<Double>());
         this.longitudesCola = new ArrayList<Integer>();
         this.cola = new ArrayList<Cliente>();
         this.generador = new GeneradorAleatorios();
         generador.setSemilla(System.currentTimeMillis());
+        this.longitudEsperadaCola = this.tiempoEsperaMedio1
+                = this.tiempoEsperaMedio2 = this.tiempoEsperaMedio3 = 0;
     }
     /**
      * Inicia la simulación
@@ -105,14 +113,32 @@ public class Simulador
         double llegada2 = this.generador.nextExponencial(this.lambda2);
         double llegada3 = this.generador.nextExponencial(this.lambda3);
         double tiempoSalida = Long.MAX_VALUE;
-        EL_MENOR menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
+        TIEMPO_EVENTO menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
         Cliente cliente = null;
         do
         {
-            if(menor == EL_MENOR.PROXIMA_SALIDA)
+            if(menor == TIEMPO_EVENTO.PROXIMA_SALIDA)
             {
+                {//simular paso del tiempo
                 this.horaSimulacion += tiempoSalida;
+                llegada1 -= tiempoSalida;
+                llegada2 -= tiempoSalida;
+                llegada3 -= tiempoSalida;
                 this.actualizarTiempoClientes(tiempoSalida);
+                }
+                if(this.cola.size() == 1) //ojo, la cabeza es el que está siendo atendido
+                {   
+                    this.servidorDisponible = true;
+                    tiempoSalida = Long.MAX_VALUE;
+                }
+                else// o sea, cola.size() > 1 (si fuera menor que uno, no estaríamos aquí
+                {
+                    tiempoSalida = this.generador.nextExponencial(this.miu);
+                }
+                //guardar en la lista respectiva el tiempo del cliente que ya va a salir
+                this.tiemposEspera.get(this.cola.get(0).getTipo()).add(this.cola.get(0).getTiempo());
+                this.cola.remove(0); //sale la cabeza (el que estaba siendo atendido)
+                this.longitudesCola.add(this.cola.size());
                 //TODO manejar lógica cuando hay una salida
             }
             else
@@ -120,14 +146,38 @@ public class Simulador
                 switch(menor)//decidir cuál es el próximo evento
                 {
                     case LLEGADA_CLIENTE1:
+                        {//simular paso del tiempo
                         this.horaSimulacion += llegada1;
+                        llegada2 -= llegada1;
+                        llegada3 -= llegada1;
+                        tiempoSalida -= llegada1;
                         this.actualizarTiempoClientes(llegada1);
+                        }
                         cliente = new Cliente(Cliente.TIPO.UNO);
+                        llegada1 = this.generador.nextExponencial(this.lambda1);
                         break;
                     case LLEGADA_CLIENTE2:
+                        {//simular paso del tiempo
+                        this.horaSimulacion += llegada2;
+                        llegada1 -= llegada2;
+                        llegada3 -= llegada2;
+                        tiempoSalida -= llegada2;
+                        this.actualizarTiempoClientes(llegada2);
+                        }
+                        cliente = new Cliente(Cliente.TIPO.DOS);
+                        llegada2 = this.generador.nextExponencial(this.lambda2);
                         //TODO encargarse del evento de llegar un cliente tipo 2
                         break;
                     case LLEGADA_CLIENTE3:
+                        {//simular paso del tiempo
+                        this.horaSimulacion += llegada3;
+                        llegada1 -= llegada3;
+                        llegada2 -= llegada3;
+                        tiempoSalida -= llegada3;
+                        this.actualizarTiempoClientes(llegada3);
+                        }
+                        cliente = new Cliente(Cliente.TIPO.TRES);
+                        llegada3 = this.generador.nextExponencial(this.lambda3);
                         //TODO encargarse del evento de llegar un cliente tipo 3
                         break;
                 }
@@ -141,42 +191,38 @@ public class Simulador
                 {
                     this.cola.add(cliente);
                 }
-
-                llegada1 = this.generador.nextExponencial(this.lambda1);
-                llegada2 = this.generador.nextExponencial(this.lambda2);
-                llegada3 = this.generador.nextExponencial(this.lambda3);
-                tiempoSalida = Long.MAX_VALUE;
-                menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
+                this.longitudesCola.add(this.cola.size());
                 //TODO generar siguiente llegada
             }
+            menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
         }while(this.horaSimulacion < this.tiempoLimiteSimulacion);
         //TODO lógica de la simulación
     }
-    enum EL_MENOR {PROXIMA_SALIDA, LLEGADA_CLIENTE1, LLEGADA_CLIENTE2, LLEGADA_CLIENTE3};
+    enum TIEMPO_EVENTO {PROXIMA_SALIDA, LLEGADA_CLIENTE1, LLEGADA_CLIENTE2, LLEGADA_CLIENTE3};
     /**
      * Indica cuál es el menor de entre 4 valores reales
      * @return
      * <ul>
-     * <li>EL_MENOR.PROXIMA_SALIDA si tiempoSalida es el menor</li>
-     * <li>EL_MENOR.LLEGADA_CLIENTEi si li es el menor</li>
+     * <li>TIEMPO_EVENTO.PROXIMA_SALIDA si tiempoSalida es el menor</li>
+     * <li>TIEMPO_EVENTO.LLEGADA_CLIENTEi si li es el menor</li>
      */
-    private EL_MENOR getMenor(double tiempoSalida, double l1, double l2, double l3)
+    private TIEMPO_EVENTO getMenor(double tiempoSalida, double l1, double l2, double l3)
     {
-        EL_MENOR resultado = EL_MENOR.PROXIMA_SALIDA;
+        TIEMPO_EVENTO resultado = TIEMPO_EVENTO.PROXIMA_SALIDA;
         double menor = tiempoSalida;
         if(l1 < menor)
         {
             menor = l1;
-            resultado = EL_MENOR.LLEGADA_CLIENTE1;
+            resultado = TIEMPO_EVENTO.LLEGADA_CLIENTE1;
         }
         if(l2 < menor)
         {
             menor = l2;
-            resultado = EL_MENOR.LLEGADA_CLIENTE2;
+            resultado = TIEMPO_EVENTO.LLEGADA_CLIENTE2;
         }
         if(l3 < menor)
         {
-            resultado = EL_MENOR.LLEGADA_CLIENTE3;
+            resultado = TIEMPO_EVENTO.LLEGADA_CLIENTE3;
         }
         return resultado;
     }
@@ -191,6 +237,37 @@ public class Simulador
         {
             c.actualizarTiempo(tiempo);
         }
+    }
+    /**
+     * Calcula la longitud media de la cola, y el tiempo de espera medio para
+     * cada tipo de cliente. 
+     */
+    private void hacerEstadistica()
+    {
+        //calcular longitud de cola media
+        for(int longitud : this.longitudesCola)
+        {
+            this.longitudEsperadaCola += longitud;
+        }
+        this.longitudEsperadaCola /= this.longitudesCola.size();
+        //calcular tiempo de espera promedio para cada tipo de cliente
+        //for(ArrayList<)
+    }
+    public double getLongitudColaEsperada()
+    {
+        return this.longitudEsperadaCola;
+    }
+    public double getTiempoEsperaMedio1()
+    {
+        return this.tiempoEsperaMedio1;
+    }
+    public double getTiempoEsperaMedio2()
+    {
+        return this.tiempoEsperaMedio2;
+    }
+    public double getTiempoEsperaMedio3()
+    {
+        return this.tiempoEsperaMedio3;
     }
     /**
      * Esta clase abstrae las propiedades de un cliente. Básicamente el tiempo
@@ -219,6 +296,10 @@ public class Simulador
         public double getTiempo()
         {
             return this.tiempo;
+        }
+        public TIPO getTipo()
+        {
+            return this.tipo;
         }
     }
 }
