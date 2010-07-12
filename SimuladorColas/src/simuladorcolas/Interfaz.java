@@ -8,21 +8,55 @@
  *
  * Created on 16/06/2010, 04:16:14 PM
  */
-
 package simuladorcolas;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.Iterator;
+import simuladorcolas.Simulador.Cliente;
 
 /**
  *
  * @author a64799
  */
 public class Interfaz extends javax.swing.JFrame {
+
     int contadorDentro = 0;
 
+    public void Actualizar(ArrayList<Cliente> cola) {
+        Graphics g = dibujo.getGraphics();
+        g.clearRect(0, 0, dibujo.WIDTH, dibujo.HEIGHT);
+        int pos = 0;
+        int tam = 10;
+        for (Iterator<Cliente> it = cola.iterator(); it.hasNext();) {
+            Cliente cliente = it.next();
+            //if (pos + tam <= dibujo.HEIGHT) {
+                if (cliente.getTipo() == Cliente.TIPO.UNO) {
+                    g.setColor(Color.RED);
+                    g.fillOval(pos, 0, tam, tam);
+                } else {
+                    if (cliente.getTipo() == Cliente.TIPO.DOS) {
+                        g.setColor(Color.BLUE);
+                        g.fillOval(pos, 0, tam, tam);
+                    } else {
+                        if (cliente.getTipo() == Cliente.TIPO.TRES) {
+                            g.setColor(Color.YELLOW);
+                            g.fillOval(pos, 0, tam, tam);
+                        }
+                    }
+                }
+                pos += tam;
+            //}
+        }
+    }
+
     public int getContadorDentro() {
+
         return contadorDentro;
+
     }
 
     public void setContadorDentro(int contadorDentro) {
@@ -37,19 +71,19 @@ public class Interfaz extends javax.swing.JFrame {
         this.contadorEspera = contadorEspera;
     }
     int contadorEspera = 0;
+
     /** Creates new form Interfaz */
     public Interfaz() {
         initComponents();
         this.setResizable(false);
-        
+
         // Se obtienen las dimensiones en pixels de la pantalla.
         Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
 
         // Una cuenta para situar la ventana en el centro de la pantalla.
-        setLocation((pantalla.width  - getSize().width) / 2,
-                    (pantalla.height - getSize().height)/ 2);
-        
-        porcentajeLleno.setStringPainted(true);
+        setLocation((pantalla.width - getSize().width) / 2,
+                (pantalla.height - getSize().height) / 2);
+
     }
 
     /** This method is called from within the constructor to
@@ -63,13 +97,14 @@ public class Interfaz extends javax.swing.JFrame {
 
         comenzarSimul = new javax.swing.JButton();
         detenerSimul = new javax.swing.JButton();
-        porcentajeLleno = new javax.swing.JProgressBar();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         cantDentro = new javax.swing.JLabel();
         cantEspera = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        dibujo = new java.awt.Canvas();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -95,98 +130,141 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel6.setText("cantidad espera:");
 
+        jButton1.setText("jButton1");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(comenzarSimul)
-                        .addGap(18, 18, 18)
-                        .addComponent(detenerSimul)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(345, 345, 345)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(cantEspera)
                             .addComponent(cantDentro)))
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jButton1)
+                        .addGap(29, 29, 29)
+                        .addComponent(comenzarSimul)
+                        .addGap(18, 18, 18)
+                        .addComponent(detenerSimul)
+                        .addGap(50, 50, 50)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel6)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addContainerGap()
                         .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(porcentajeLleno, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(dibujo, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap(26, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addGap(10, 10, 10)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(22, 22, 22)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(comenzarSimul)
-                                    .addComponent(detenerSimul)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel3)
-                                            .addComponent(cantDentro))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(cantEspera))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(22, 22, 22)
-                                        .addComponent(jLabel6))))))
+                        .addComponent(jLabel3)
+                        .addGap(11, 11, 11))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(porcentajeLleno, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(22, 22, 22)
+                        .addComponent(jLabel6))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(comenzarSimul)
+                        .addComponent(detenerSimul)
+                        .addComponent(jButton1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(cantDentro)
+                .addGap(0, 0, 0)
+                .addComponent(cantEspera)
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(dibujo, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2))
+                .addGap(19, 19, 19))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void comenzarSimulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comenzarSimulActionPerformed
-        setContadorDentro(getContadorDentro()+1);
-        setContadorEspera(getContadorEspera()+1);
+        setContadorDentro(getContadorDentro() + 1);
+        setContadorEspera(getContadorEspera() + 1);
         cantDentro.setText(Integer.toString(+getContadorDentro()));
         cantEspera.setText(Integer.toString(getContadorEspera()));
-        porcentajeLleno.setValue(Integer.parseInt(cantDentro.getText()));
 
     }//GEN-LAST:event_comenzarSimulActionPerformed
 
     private void detenerSimulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detenerSimulActionPerformed
-        setContadorDentro(getContadorDentro()-1);
-        setContadorEspera(getContadorEspera()-1);
-        cantDentro.setText(""+getContadorDentro());
-        cantEspera.setText(""+getContadorEspera());
-        porcentajeLleno.setValue(Integer.parseInt(cantDentro.getText()));
+        setContadorDentro(getContadorDentro() - 1);
+        setContadorEspera(getContadorEspera() - 1);
+        cantDentro.setText("" + getContadorDentro());
+        cantEspera.setText("" + getContadorEspera());
     }//GEN-LAST:event_detenerSimulActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ArrayList<Cliente> lista = new ArrayList<Cliente>();
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.DOS));
+        lista.add(new Cliente(Cliente.TIPO.TRES));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.DOS));
+        lista.add(new Cliente(Cliente.TIPO.TRES));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.DOS));
+        lista.add(new Cliente(Cliente.TIPO.TRES));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.DOS));
+        lista.add(new Cliente(Cliente.TIPO.TRES));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.DOS));
+        lista.add(new Cliente(Cliente.TIPO.TRES));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.DOS));
+        lista.add(new Cliente(Cliente.TIPO.TRES));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.DOS));
+        lista.add(new Cliente(Cliente.TIPO.TRES));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        lista.add(new Cliente(Cliente.TIPO.UNO));
+        Actualizar(lista);
 
+    }//GEN-LAST:event_jButton1ActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel cantDentro;
     private javax.swing.JLabel cantEspera;
     private javax.swing.JButton comenzarSimul;
     private javax.swing.JButton detenerSimul;
+    private java.awt.Canvas dibujo;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JProgressBar porcentajeLleno;
     // End of variables declaration//GEN-END:variables
-
 }
