@@ -28,12 +28,12 @@ public class Interfaz extends javax.swing.JFrame {
 
     public void Actualizar(ArrayList<Cliente> cola) {
         Graphics g = dibujo.getGraphics();
-        g.clearRect(0, 0, dibujo.WIDTH, dibujo.HEIGHT);
+        g.clearRect(0, 0, dibujo.getWidth(), dibujo.getHeight());
         int pos = 0;
         int tam = 10;
         for (Iterator<Cliente> it = cola.iterator(); it.hasNext();) {
             Cliente cliente = it.next();
-            //if (pos + tam <= dibujo.HEIGHT) {
+            if (pos + tam <= dibujo.getWidth()) {
                 if (cliente.getTipo() == Cliente.TIPO.UNO) {
                     g.setColor(Color.RED);
                     g.fillOval(pos, 0, tam, tam);
@@ -49,7 +49,7 @@ public class Interfaz extends javax.swing.JFrame {
                     }
                 }
                 pos += tam;
-            //}
+            }
         }
     }
 
