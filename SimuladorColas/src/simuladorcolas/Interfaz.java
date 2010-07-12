@@ -122,10 +122,6 @@ public class Interfaz extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("entradas");
-
-        jLabel2.setText("salidas");
-
         jLabel3.setText("cantidad dentro:");
 
         jLabel6.setText("cantidad espera:");
@@ -212,6 +208,14 @@ public class Interfaz extends javax.swing.JFrame {
         cantDentro.setText("" + getContadorDentro());
         cantEspera.setText("" + getContadorEspera());
     }//GEN-LAST:event_detenerSimulActionPerformed
+    /**
+     * Redibuja en la pizarra (this.pizarra) según el contenido de
+     * this.simulador.getCola()
+     */
+    private void repintar()
+    {
+        //TODO jorge programa esto
+    }
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         ArrayList<Cliente> lista = new ArrayList<Cliente>();
