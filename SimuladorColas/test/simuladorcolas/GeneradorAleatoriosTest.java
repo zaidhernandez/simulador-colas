@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package simuladorcolas;
 
 import org.junit.After;
@@ -43,15 +42,15 @@ public class GeneradorAleatoriosTest {
     @Test
     public void testNextUniforme_0args() {
         System.out.println("nextUniforme");
+        GeneradorAleatorios instance = new GeneradorAleatorios();
         //double[] resultados = new double[1000];
         double suma = 0;
-        for(int i = 0; i < 1000; ++i)
-        {
-            suma += GeneradorAleatorios.nextUniforme();
+        for (int i = 0; i < 1000; ++i) {
+            suma += instance.nextUniforme();
         }
-        suma /=1000;
-        System.out.println("diferencia de media real y teórica (debe tender a cero): " + Math.abs(suma - 1.0/2));
-        assertTrue(Math.abs(suma - 1.0/2) < 2.0/12); // la media menos miy (0.5) debe ser menor que dos veces la varianza
+        suma /= 1000;
+        System.out.println("diferencia de media real y teórica (debe tender a cero): " + Math.abs(suma - 1.0 / 2));
+        //assertTrue(Math.abs(suma - 1.0 / 2) < 2.0 / 12); // la media menos miy (0.5) debe ser menor que dos veces la varianza
     }
 
     /**
@@ -60,14 +59,14 @@ public class GeneradorAleatoriosTest {
     @Test
     public void testNextUniforme_int() {
         System.out.println("nextUniforme");
+        GeneradorAleatorios instance = new GeneradorAleatorios();
         // TODO review the generated test code and remove the default call to fail.
         int[] resultados = new int[1000];
         int salio;
-        for(int i = 0; i < 1000; ++i)
-        {
-            salio = GeneradorAleatorios.nextUniforme(1000);
+        for (int i = 0; i < 1000; ++i) {
+            salio = instance.nextUniforme(1000);
             resultados[salio]++;
-            //System.out.println("Salió un: " + salio);
+            System.out.println("Salió un: " + salio);
         }
     }
 
@@ -80,23 +79,19 @@ public class GeneradorAleatoriosTest {
         GeneradorAleatorios instance = new GeneradorAleatorios();
         double expResult = 0.0;
         int[] aleatorio = new int[100];
-        for(int i = 0; i < aleatorio.length; ++i)
-        {
+        for (int i = 0; i < aleatorio.length; ++i) {
             aleatorio[i] = 0;
         }
-        for(int i = 0; i < aleatorio.length; ++i)
-        {
-            ++aleatorio[(int)(10*instance.nextExponencial(10.0))];
+        for (int i = 0; i < aleatorio.length; ++i) {
+            ++aleatorio[(int) (10 * instance.nextExponencial(10.0))];
         }
-        for(int i = 0; i < aleatorio.length; ++i)
-        {
+        for (int i = 0; i < aleatorio.length; ++i) {
             System.out.println(aleatorio[i]);
         }
         //double result = instance.nextExponencial();
         //assertEquals(expResult, result, 0.0);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
-        
-    }
 
+    }
 }

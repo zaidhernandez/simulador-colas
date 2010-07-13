@@ -11,21 +11,17 @@ public class Main {
     public static void main(String[] args) {
         GeneradorAleatorios generador = new GeneradorAleatorios();
         double[] ran = new double[10];
-        for(int i = 0; i < 10; ++i)
-        {
+        for (int i = 0; i < 10; ++i) {
             ran[i] = generador.nextExponencial(10);
         }
         int[] aleatorio = new int[100];
-        for(int i = 0; i < aleatorio.length; ++i)
-        {
+        for (int i = 0; i < aleatorio.length; ++i) {
             aleatorio[i] = 0;
         }
-        for(int i = 0; i < aleatorio.length; ++i)
-        {
-            ++aleatorio[(int)(10*generador.nextExponencial(10.0))];
+        for (int i = 0; i < aleatorio.length; ++i) {
+            ++aleatorio[(int) (10 * generador.nextExponencial(10.0))];
         }
-        for(int i = 0; i < aleatorio.length; ++i)
-        {
+        for (int i = 0; i < aleatorio.length; ++i) {
             System.out.println(aleatorio[i]);
         }
 
@@ -39,6 +35,6 @@ public class Main {
         System.out.println("Ttiempo promedio de espera para clientes tipo 3: " + sim.getTiempoEsperaMedio3());
         Interfaz pantalla = new Interfaz();
         pantalla.setVisible(true);
+ 
     }
-
 }
