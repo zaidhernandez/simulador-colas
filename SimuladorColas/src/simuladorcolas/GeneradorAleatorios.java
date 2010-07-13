@@ -11,75 +11,69 @@ package simuladorcolas;
  */
 public class GeneradorAleatorios {
 
-    /**
-     * Semilla a partir de la cual se inician las secuencias aleatorias
-     * producidas por los diferentes métodos de esta clase
-     */
-    private static long semilla = 4657382;
     static java.util.Random generador;
-    {
-    //private static int mt_index;
-    //private static int[] mt_buffer = new int[624];
-    /*private static double convertir(int num) {
-        
+    private static int indiceDelBuffer;
+    private static int[] bufferAleatorios = new int[624];
+    /**
+     * Dado un entero n, obtiene un número real que toma a 0 como parte entera y
+     * a los dígitos de n como parte flotante
+     * @param num número entero a partir del cuál se construye el número real
+     * @return un número real que usa a los dígitos de num como parte flotante
+     * y a 0 como parte entera. Es decir, el número devuelto es igual a 0.num
+     */
+    private static double convertir(int num) {
         if(Integer.signum(num)!=1){
             num*=-1;
         }
         String valor = num+"";
         valor = "0."+valor;
         return Double.parseDouble(valor);
-    }*/
-
-    /*public GeneradorAleatorios() {
-        java.util.Random r = new java.util.Random();
-        for (int i = 0; i < 624; i++) {
-            mt_buffer[i] = r.nextInt();
-        }
-        mt_index = 0;
-
-        //generador = new java.util.Random();
-        //generador.setSeed(semilla);
-    }*/
     }
     /**
      * Ajusta un nuevo valor como semilla
      * @param s nueva semilla
      */
     public static void setSemilla(long s) {
-        semilla = s;
         GeneradorAleatorios.generador = new java.util.Random();
         GeneradorAleatorios.generador.setSeed(s);
+        for (int i = 0; i < 624; i++)
+        {
+            bufferAleatorios[i] = GeneradorAleatorios.generador.nextInt();
+        }
+        indiceDelBuffer = 0;
     }
 
     /**
-     * Genera un nuevo número pseudo-aleatorio uniforme en [0, 1[
+     * Genera un nuevo número pseudo-aleatorio uniforme en [0, 1[ usando el
+     * método de Mersenne Twister
+     * @see http://www.qbrundage.com/michaelb/pubs/essays/random_number_generation.html
      * @return un número pseudo-aleatorio uniforme en [0, 1[
      */
     public static double nextUniforme() {
         //código para generar un random uniforme en [0, 1[
-        /*if (mt_index == 624) {
-            mt_index = 0;
+        if (indiceDelBuffer == 624) {
+            indiceDelBuffer = 0;
             int i = 0;
             int s;
             for (; i < 624 - 397; i++) {
-                s = (mt_buffer[i] & 0x80000000) | (mt_buffer[i + 1] & 0x7FFFFFFF);
-                mt_buffer[i] = mt_buffer[i + 397] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
+                s = (bufferAleatorios[i] & 0x80000000) | (bufferAleatorios[i + 1] & 0x7FFFFFFF);
+                bufferAleatorios[i] = bufferAleatorios[i + 397] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
             }
             for (; i < 623; i++) {
-                s = (mt_buffer[i] & 0x80000000) | (mt_buffer[i + 1] & 0x7FFFFFFF);
-                mt_buffer[i] = mt_buffer[i - (624 - 397)] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
+                s = (bufferAleatorios[i] & 0x80000000) | (bufferAleatorios[i + 1] & 0x7FFFFFFF);
+                bufferAleatorios[i] = bufferAleatorios[i - (624 - 397)] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
             }
 
-            s = (mt_buffer[623] & 0x80000000) | (mt_buffer[0] & 0x7FFFFFFF);
-            mt_buffer[623] = mt_buffer[396] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
+            s = (bufferAleatorios[623] & 0x80000000) | (bufferAleatorios[0] & 0x7FFFFFFF);
+            bufferAleatorios[623] = bufferAleatorios[396] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
         }
-        int num = mt_buffer[mt_index++];
+        int num = bufferAleatorios[indiceDelBuffer++];
         if (Integer.signum(num) != 1) {
             num *= -1;
         }
         double valor = convertir(num);
-        return valor;*/
-        return generador.nextDouble();
+        return valor;
+       // return generador.nextDouble();
     }
 
     /**
