@@ -1,78 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
- * Interfaz.java
- *
- * Created on 16/06/2010, 04:16:14 PM
- */
 package simuladorcolas;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.Iterator;
-import simuladorcolas.Simulador.Cliente;
-import java.util.concurrent.Semaphore;
-
 /**
  *
  * @author a64799
  */
 public class Interfaz extends javax.swing.JFrame {
-
-    int contadorDentro = 0;
-
-    public void Actualizar(ArrayList<Cliente> cola) {
-        Graphics g = dibujo.getGraphics();
-        g.clearRect(0, 0, dibujo.getWidth(), dibujo.getHeight());
-        int pos = 0;
-        int tam = 10;
-        for (Iterator<Cliente> it = cola.iterator(); it.hasNext();) {
-            Cliente cliente = it.next();
-            if (pos + tam <= dibujo.getWidth()) {
-                if (cliente.getTipo() == Cliente.TIPO.UNO) {
-                    g.setColor(Color.RED);
-                    g.fillOval(pos, 0, tam, tam);
-                } else {
-                    if (cliente.getTipo() == Cliente.TIPO.DOS) {
-                        g.setColor(Color.BLUE);
-                        g.fillOval(pos, 0, tam, tam);
-                    } else {
-                        if (cliente.getTipo() == Cliente.TIPO.TRES) {
-                            g.setColor(Color.YELLOW);
-                            g.fillOval(pos, 0, tam, tam);
-                        }
-                    }
-                }
-                pos += tam;
-            }
-        }
-    }
-
-    public int getContadorDentro() {
-
-        return contadorDentro;
-
-    }
-
-    public void setContadorDentro(int contadorDentro) {
-        this.contadorDentro = contadorDentro;
-    }
-
-    public int getContadorEspera() {
-        return contadorEspera;
-    }
-
-    public void setContadorEspera(int contadorEspera) {
-        this.contadorEspera = contadorEspera;
-    }
-    int contadorEspera = 0;
-
     /** Creates new form Interfaz */
     public Interfaz() {
         initComponents();
@@ -84,7 +18,9 @@ public class Interfaz extends javax.swing.JFrame {
         // Una cuenta para situar la ventana en el centro de la pantalla.
         setLocation((pantalla.width - getSize().width) / 2,
                 (pantalla.height - getSize().height) / 2);
-        this.mutex = new Semaphore(1); //solo se ocupa un permiso (el de simulador) para avanzar
+        this.radioBotonX1.setEnabled(false);
+        this.radioBotonX100.setEnabled(false);
+        this.radioBotonX1000.setEnabled(false);
     }
 
     /** This method is called from within the constructor to
@@ -96,55 +32,179 @@ public class Interfaz extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        comenzarSimul = new javax.swing.JButton();
-        detenerSimul = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        grupoBotonesVelocidad = new javax.swing.ButtonGroup();
         cantDentro = new javax.swing.JLabel();
         cantEspera = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         dibujo = new java.awt.Canvas();
-        jButton1 = new javax.swing.JButton();
+        botonSimular = new javax.swing.JButton();
         panelAjustes = new javax.swing.JPanel();
+        textFieldLambda1 = new javax.swing.JTextField();
+        textFieldLambda2 = new javax.swing.JTextField();
+        textFieldLambda3 = new javax.swing.JTextField();
+        textFieldMyu = new javax.swing.JTextField();
+        textFieldTiempo = new javax.swing.JTextField();
+        labelLambda1 = new javax.swing.JLabel();
+        labelLambda2 = new javax.swing.JLabel();
+        labelLambda3 = new javax.swing.JLabel();
+        labelMyu = new javax.swing.JLabel();
+        labelTiempo = new javax.swing.JLabel();
+        panelVelocidad = new javax.swing.JPanel();
+        radioBotonX1 = new javax.swing.JRadioButton();
+        radioBotonX100 = new javax.swing.JRadioButton();
+        radioBotonX1000 = new javax.swing.JRadioButton();
+        radioBotonX10000 = new javax.swing.JRadioButton();
+        jLabel1 = new javax.swing.JLabel();
+        labelTamColaTitulo = new javax.swing.JLabel();
+        labelTamCola = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        comenzarSimul.setText("Simular");
-        comenzarSimul.addActionListener(new java.awt.event.ActionListener() {
+        botonSimular.setText("Simular");
+        botonSimular.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comenzarSimulActionPerformed(evt);
-            }
-        });
-
-        detenerSimul.setText("Detener");
-        detenerSimul.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                detenerSimulActionPerformed(evt);
-            }
-        });
-
-        jLabel3.setText("cantidad dentro:");
-
-        jLabel6.setText("cantidad espera:");
-
-        jButton1.setText("jButton1");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                botonSimularActionPerformed(evt);
             }
         });
 
         panelAjustes.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
+        textFieldLambda1.setText("0.2");
+
+        textFieldLambda2.setText("0.4");
+
+        textFieldLambda3.setText("0.8");
+
+        textFieldMyu.setText("0.1");
+
+        textFieldTiempo.setText("100");
+
+        labelLambda1.setForeground(new java.awt.Color(255, 0, 51));
+        labelLambda1.setText("lambda1");
+
+        labelLambda2.setForeground(new java.awt.Color(0, 51, 255));
+        labelLambda2.setText("lambda2");
+
+        labelLambda3.setForeground(new java.awt.Color(51, 204, 0));
+        labelLambda3.setText("lambda3");
+
+        labelMyu.setText("myu");
+
+        labelTiempo.setText("Tiempo simulación");
+
         javax.swing.GroupLayout panelAjustesLayout = new javax.swing.GroupLayout(panelAjustes);
         panelAjustes.setLayout(panelAjustesLayout);
         panelAjustesLayout.setHorizontalGroup(
             panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 389, Short.MAX_VALUE)
+            .addGroup(panelAjustesLayout.createSequentialGroup()
+                .addGap(21, 21, 21)
+                .addGroup(panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(textFieldLambda1)
+                    .addComponent(labelLambda1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(26, 26, 26)
+                .addGroup(panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(textFieldLambda2)
+                    .addComponent(labelLambda2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(26, 26, 26)
+                .addGroup(panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(textFieldLambda3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(labelLambda3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(27, 27, 27)
+                .addGroup(panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(labelMyu)
+                    .addComponent(textFieldMyu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(textFieldTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(labelTiempo))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         panelAjustesLayout.setVerticalGroup(
             panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 66, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelAjustesLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelLambda1)
+                    .addComponent(labelLambda2)
+                    .addComponent(labelLambda3)
+                    .addComponent(labelMyu)
+                    .addComponent(labelTiempo))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(panelAjustesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(textFieldTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textFieldLambda1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textFieldLambda2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textFieldLambda3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(textFieldMyu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
+
+        panelVelocidad.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        grupoBotonesVelocidad.add(radioBotonX1);
+        radioBotonX1.setText("x1");
+        radioBotonX1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radioBotonX1ActionPerformed(evt);
+            }
+        });
+
+        grupoBotonesVelocidad.add(radioBotonX100);
+        radioBotonX100.setSelected(true);
+        radioBotonX100.setText("x100");
+        radioBotonX100.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radioBotonX100ActionPerformed(evt);
+            }
+        });
+
+        grupoBotonesVelocidad.add(radioBotonX1000);
+        radioBotonX1000.setText("x1000");
+        radioBotonX1000.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radioBotonX1000ActionPerformed(evt);
+            }
+        });
+
+        grupoBotonesVelocidad.add(radioBotonX10000);
+        radioBotonX10000.setText("x10000");
+        radioBotonX10000.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                radioBotonX10000ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout panelVelocidadLayout = new javax.swing.GroupLayout(panelVelocidad);
+        panelVelocidad.setLayout(panelVelocidadLayout);
+        panelVelocidadLayout.setHorizontalGroup(
+            panelVelocidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelVelocidadLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(radioBotonX1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(radioBotonX100)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(radioBotonX1000)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(radioBotonX10000)
+                .addContainerGap(75, Short.MAX_VALUE))
+        );
+        panelVelocidadLayout.setVerticalGroup(
+            panelVelocidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelVelocidadLayout.createSequentialGroup()
+                .addContainerGap(8, Short.MAX_VALUE)
+                .addGroup(panelVelocidadLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(radioBotonX1)
+                    .addComponent(radioBotonX100)
+                    .addComponent(radioBotonX1000)
+                    .addComponent(radioBotonX10000))
+                .addContainerGap())
+        );
+
+        jLabel1.setText("Unidades de tiempo en minutos");
+
+        labelTamColaTitulo.setText("<html>Tamaño de la cola:</html>");
+
+        labelTamCola.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -159,123 +219,143 @@ public class Interfaz extends javax.swing.JFrame {
                             .addComponent(cantDentro)))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
+                        .addComponent(dibujo, javax.swing.GroupLayout.PREFERRED_SIZE, 455, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(dibujo, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(jButton1)
-                                .addGap(29, 29, 29)
-                                .addComponent(comenzarSimul)
+                                .addComponent(botonSimular)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(panelVelocidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(panelAjustes, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
                                 .addGap(18, 18, 18)
-                                .addComponent(detenerSimul)
-                                .addGap(50, 50, 50)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel6)))
-                            .addComponent(panelAjustes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(34, Short.MAX_VALUE))
+                                .addComponent(labelTamColaTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(labelTamCola, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(100, 100, 100)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(14, Short.MAX_VALUE)
-                .addComponent(panelAjustes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6)
-                            .addComponent(jButton1)
-                            .addComponent(comenzarSimul)
-                            .addComponent(detenerSimul))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(labelTamColaTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(labelTamCola, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE))
+                    .addComponent(panelAjustes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addComponent(botonSimular))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(panelVelocidad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cantDentro)
-                .addGap(0, 0, 0)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(cantEspera)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dibujo, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(19, 19, 19))
+                .addComponent(dibujo, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void comenzarSimulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comenzarSimulActionPerformed
-        setContadorDentro(getContadorDentro() + 1);
-        setContadorEspera(getContadorEspera() + 1);
-        cantDentro.setText(Integer.toString(+getContadorDentro()));
-        cantEspera.setText(Integer.toString(getContadorEspera()));
+    private void botonSimularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonSimularActionPerformed
+        double lambda1, lambda2, lambda3, myu, tiempo;
+        try{
+            lambda1 = Double.parseDouble(this.textFieldLambda1.getText());
+            lambda2 = Double.parseDouble(this.textFieldLambda2.getText());
+            lambda3 = Double.parseDouble(this.textFieldLambda3.getText());
+            myu = Double.parseDouble(this.textFieldMyu.getText());
+            tiempo = Double.parseDouble(this.textFieldTiempo.getText());
+            /**
+             * Note que estoy enviando el inverso multiplicativo de cada lambda y myu.
+             * En una aparente contradicción a la teoría, descubrí empíricamente que
+             * -1*log(x)/lambda (x aleatorio uniforme) no tiene media lambda, sino más
+             * bien 10*1/lambda
+             */
+            this.simulador = new Simulador(1.0/lambda1,
+                                           1.0/lambda2,
+                                           1.0/lambda3,
+                                           1.0/myu,
+                                           tiempo,
+                                           this.dibujo,
+                                           this.labelTamCola);
+            this.simulador.velocidad = 100;
+            this.radioBotonX1.setEnabled(true);
+            this.radioBotonX100.setEnabled(true);
+            this.radioBotonX1000.setEnabled(true);
+            new Thread(this.simulador, "simulador").start();
+            this.panelAjustes.setEnabled(false);
+            this.textFieldLambda1.setEnabled(false);
+            this.textFieldLambda2.setEnabled(false);
+            this.textFieldLambda3.setEnabled(false);
+            this.textFieldMyu.setEnabled(false);
+            this.textFieldTiempo.setEnabled(false);
+        }
+        catch(java.lang.NumberFormatException NFE)
+        {
+            javax.swing.JOptionPane.showMessageDialog(this,
+            "Algún número está incorrecto.\n" +
+            "Se permiten números reales usando punto (.)\n" +
+            "como separador de decimales",
+            "Error de formato numérico",
+            javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+}//GEN-LAST:event_botonSimularActionPerformed
 
-    }//GEN-LAST:event_comenzarSimulActionPerformed
+    private void radioBotonX1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioBotonX1ActionPerformed
+        this.simulador.velocidad = 1;
+    }//GEN-LAST:event_radioBotonX1ActionPerformed
 
-    private void detenerSimulActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detenerSimulActionPerformed
-        setContadorDentro(getContadorDentro() - 1);
-        setContadorEspera(getContadorEspera() - 1);
-        cantDentro.setText("" + getContadorDentro());
-        cantEspera.setText("" + getContadorEspera());
-    }//GEN-LAST:event_detenerSimulActionPerformed
-    /**
-     * Redibuja en la pizarra (this.pizarra) según el contenido de
-     * this.simulador.getCola()
-     */
-    private void repintar()
-    {
-        //TODO jorge programa esto
-    }
+    private void radioBotonX100ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioBotonX100ActionPerformed
+        this.simulador.velocidad = 100;
+    }//GEN-LAST:event_radioBotonX100ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        ArrayList<Cliente> lista = new ArrayList<Cliente>();
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.DOS));
-        lista.add(new Cliente(Cliente.TIPO.TRES));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.DOS));
-        lista.add(new Cliente(Cliente.TIPO.TRES));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.DOS));
-        lista.add(new Cliente(Cliente.TIPO.TRES));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.DOS));
-        lista.add(new Cliente(Cliente.TIPO.TRES));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.DOS));
-        lista.add(new Cliente(Cliente.TIPO.TRES));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.DOS));
-        lista.add(new Cliente(Cliente.TIPO.TRES));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.DOS));
-        lista.add(new Cliente(Cliente.TIPO.TRES));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        lista.add(new Cliente(Cliente.TIPO.UNO));
-        Actualizar(lista);
+    private void radioBotonX1000ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioBotonX1000ActionPerformed
+        this.simulador.velocidad = 1000;
+    }//GEN-LAST:event_radioBotonX1000ActionPerformed
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void radioBotonX10000ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_radioBotonX10000ActionPerformed
+        this.simulador.velocidad = 10000;
+    }//GEN-LAST:event_radioBotonX10000ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton botonSimular;
     private javax.swing.JLabel cantDentro;
     private javax.swing.JLabel cantEspera;
-    private javax.swing.JButton comenzarSimul;
-    private javax.swing.JButton detenerSimul;
     private java.awt.Canvas dibujo;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel6;
+    private javax.swing.ButtonGroup grupoBotonesVelocidad;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel labelLambda1;
+    private javax.swing.JLabel labelLambda2;
+    private javax.swing.JLabel labelLambda3;
+    private javax.swing.JLabel labelMyu;
+    private javax.swing.JLabel labelTamCola;
+    private javax.swing.JLabel labelTamColaTitulo;
+    private javax.swing.JLabel labelTiempo;
     private javax.swing.JPanel panelAjustes;
+    private javax.swing.JPanel panelVelocidad;
+    private javax.swing.JRadioButton radioBotonX1;
+    private javax.swing.JRadioButton radioBotonX100;
+    private javax.swing.JRadioButton radioBotonX1000;
+    private javax.swing.JRadioButton radioBotonX10000;
+    private javax.swing.JTextField textFieldLambda1;
+    private javax.swing.JTextField textFieldLambda2;
+    private javax.swing.JTextField textFieldLambda3;
+    private javax.swing.JTextField textFieldMyu;
+    private javax.swing.JTextField textFieldTiempo;
     // End of variables declaration//GEN-END:variables
-    private Semaphore mutex;
+    private Simulador simulador;
 }

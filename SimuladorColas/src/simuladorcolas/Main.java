@@ -9,30 +9,27 @@ package simuladorcolas;
 public class Main {
 
     public static void main(String[] args) {
-        GeneradorAleatorios generador = new GeneradorAleatorios();
+        GeneradorAleatorios.setSemilla(System.currentTimeMillis());
         double[] ran = new double[10];
         for (int i = 0; i < 10; ++i) {
-            ran[i] = generador.nextExponencial(10);
+            ran[i] = GeneradorAleatorios.nextUniforme();
         }
         int[] aleatorio = new int[100];
         for (int i = 0; i < aleatorio.length; ++i) {
             aleatorio[i] = 0;
         }
-        for (int i = 0; i < aleatorio.length; ++i) {
-            ++aleatorio[(int) (10 * generador.nextExponencial(10.0))];
+        for(int i = 0; i < aleatorio.length; ++i)
+        {
+            ++aleatorio[(int)(GeneradorAleatorios.nextExponencial(1.0/11))];
         }
-        for (int i = 0; i < aleatorio.length; ++i) {
+        double media = 0;
+        for(int i = 0; i < aleatorio.length; ++i)
+        {
             System.out.println(aleatorio[i]);
+            media += i*aleatorio[i];
         }
-
-
-
-        Simulador sim = new Simulador(2, 3, 4, 8.5, 100);
-        sim.simular();
-        System.out.println("Tamaño promedio de la cola: " + sim.getLongitudColaEsperada());
-        System.out.println("Ttiempo promedio de espera para clientes tipo 1: " + sim.getTiempoEsperaMedio1());
-        System.out.println("Ttiempo promedio de espera para clientes tipo 2: " + sim.getTiempoEsperaMedio2());
-        System.out.println("Ttiempo promedio de espera para clientes tipo 3: " + sim.getTiempoEsperaMedio3());
+        media /= 1000;
+        System.out.println("La media es: " + media);
         Interfaz pantalla = new Interfaz();
         pantalla.setVisible(true);
  

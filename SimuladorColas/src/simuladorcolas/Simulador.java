@@ -1,8 +1,14 @@
 package simuladorcolas;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Semaphore;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 
 /**
@@ -67,11 +73,6 @@ public class Simulador implements Runnable
      */
     private ArrayList<Cliente> cola;
     /**
-     * Generador de números aleatorios
-     */
-    private final GeneradorAleatorios generador;
-
-    /**
      * Tamaño esperado de la cola (L)
      */
     private double longitudEsperadaCola;
@@ -79,8 +80,15 @@ public class Simulador implements Runnable
      * tiempoEsperaMedio[i] = Tiempo espera medio para clientes tipo i (Wi)
      */
     private double[] tiempoEsperaMedio;
-
-    private Semaphore mutex;
+    /**
+     * Canva donde se dibuja el estado de la cola
+     */
+    private Canvas dibujo;
+    /**
+     * En esta etiqueta se escribe el tamaño de la cola cada vez que cambia
+     */
+    private JLabel etiquetaTamCola;
+    public long velocidad;
     /**
      * Crea un nuevo objeto Simulador indicando la media de los tiempos de
      * llegada para cada cliente, la media del tiempo de atención y el tiempo
@@ -89,8 +97,12 @@ public class Simulador implements Runnable
      * @param l2 tiempo esperado de llegada de los clientes de tipo 2
      * @param l3 tiempo esperado de llegada de los clientes de tipo 3
      * @param t tiempo que tardará la simulación
+     * @param mx semáforo para lograr sincronización en cada iteración
+     * (ocurrencia de un evento) en el método simular)
+     * @param jl etiqueta en la que se escribe el tamaño de la cola cada vez que
+     * cambia
      */
-    public Simulador(double l1, double l2, double l3, double m, double t)
+    public Simulador(double l1, double l2, double l3, double m, double t, Canvas d, JLabel jl)
     {
         this.lambda1 = l1;
         this.lambda2 = l2;
@@ -105,22 +117,23 @@ public class Simulador implements Runnable
         tiemposEspera.put(Cliente.TIPO.TRES, new ArrayList<Double>());
         this.longitudesCola = new ArrayList<Integer>();
         this.cola = new ArrayList<Cliente>();
-        this.generador = new GeneradorAleatorios();
-        generador.setSemilla(System.currentTimeMillis());
+        GeneradorAleatorios.setSemilla(System.currentTimeMillis());
         this.tiempoEsperaMedio = new double[3];
         this.longitudEsperadaCola = this.tiempoEsperaMedio[0]
                 = this.tiempoEsperaMedio[1] = this.tiempoEsperaMedio[2] = 0;
-        mutex = new Semaphore(1); //solo se ocupa un permiso (el de la interfaz) para pasar
+        this.dibujo = d;
+        this.etiquetaTamCola = jl;
+        this.velocidad = 1;
     }
     /**
      * Inicia la simulación
      */
-    public void simular()
+    public void simular() throws java.lang.InterruptedException
     {
         //generar tiempos de llegada
-        double llegada1 = this.generador.nextExponencial(this.lambda1);
-        double llegada2 = this.generador.nextExponencial(this.lambda2);
-        double llegada3 = this.generador.nextExponencial(this.lambda3);
+        double llegada1 = GeneradorAleatorios.nextExponencial(this.lambda1);
+        double llegada2 = GeneradorAleatorios.nextExponencial(this.lambda2);
+        double llegada3 = GeneradorAleatorios.nextExponencial(this.lambda3);
         double tiempoSalida = Long.MAX_VALUE;
         TIEMPO_EVENTO menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
         Cliente cliente = null;
@@ -129,6 +142,7 @@ public class Simulador implements Runnable
             if(menor == TIEMPO_EVENTO.PROXIMA_SALIDA)
             {
                 {//simular paso del tiempo
+                Thread.sleep((long)(600000*tiempoSalida)/this.velocidad);
                 this.horaSimulacion += tiempoSalida;
                 llegada1 -= tiempoSalida;
                 llegada2 -= tiempoSalida;
@@ -142,12 +156,13 @@ public class Simulador implements Runnable
                 }
                 else// o sea, cola.size() > 1 (si fuera menor que uno, no estaríamos aquí
                 {
-                    tiempoSalida = this.generador.nextExponencial(this.miu);
+                    tiempoSalida = GeneradorAleatorios.nextExponencial(this.miu);
                 }
                 //guardar en la lista respectiva el tiempo del cliente que ya va a salir
                 this.tiemposEspera.get(this.cola.get(0).getTipo()).add(this.cola.get(0).getTiempo());
                 this.cola.remove(0); //sale la cabeza (el que estaba siendo atendido)
                 this.longitudesCola.add(this.cola.size());
+                this.etiquetaTamCola.setText("" + this.cola.size());
                 //TODO manejar lógica cuando hay una salida
             }
             else
@@ -156,6 +171,9 @@ public class Simulador implements Runnable
                 {
                     case LLEGADA_CLIENTE1:
                         {//simular paso del tiempo
+                        Thread.sleep((long)(600000*llegada1)/this.velocidad);
+                        //this.wait((long)(100*llegada1));
+                        //this.wait(llegada1);
                         this.horaSimulacion += llegada1;
                         llegada2 -= llegada1;
                         llegada3 -= llegada1;
@@ -163,10 +181,13 @@ public class Simulador implements Runnable
                         this.actualizarTiempoClientes(llegada1);
                         }
                         cliente = new Cliente(Cliente.TIPO.UNO);
-                        llegada1 = this.generador.nextExponencial(this.lambda1);
+                        llegada1 = GeneradorAleatorios.nextExponencial(this.lambda1);
                         break;
                     case LLEGADA_CLIENTE2:
                         {//simular paso del tiempo
+                        Thread.sleep((long)(600000*llegada2)/this.velocidad);
+                        //this.wait((long)(100*llegada2));
+                        //this.wait(llegada2);
                         this.horaSimulacion += llegada2;
                         llegada1 -= llegada2;
                         llegada3 -= llegada2;
@@ -174,11 +195,14 @@ public class Simulador implements Runnable
                         this.actualizarTiempoClientes(llegada2);
                         }
                         cliente = new Cliente(Cliente.TIPO.DOS);
-                        llegada2 = this.generador.nextExponencial(this.lambda2);
+                        llegada2 = GeneradorAleatorios.nextExponencial(this.lambda2);
                         //TODO encargarse del evento de llegar un cliente tipo 2
                         break;
                     case LLEGADA_CLIENTE3:
                         {//simular paso del tiempo
+                        Thread.sleep((long)(600000*llegada3)/this.velocidad);
+                        //this.wait((long)(100*llegada3));
+                        //this.wait(llegada3);
                         this.horaSimulacion += llegada3;
                         llegada1 -= llegada3;
                         llegada2 -= llegada3;
@@ -186,7 +210,7 @@ public class Simulador implements Runnable
                         this.actualizarTiempoClientes(llegada3);
                         }
                         cliente = new Cliente(Cliente.TIPO.TRES);
-                        llegada3 = this.generador.nextExponencial(this.lambda3);
+                        llegada3 = GeneradorAleatorios.nextExponencial(this.lambda3);
                         //TODO encargarse del evento de llegar un cliente tipo 3
                         break;
                 }
@@ -194,19 +218,25 @@ public class Simulador implements Runnable
                 {
                     this.cola.add(0, cliente);
                     this.servidorDisponible = false;
-                    tiempoSalida = this.generador.nextExponencial(this.miu);
+                    tiempoSalida = GeneradorAleatorios.nextExponencial(this.miu);
                 }
                 else
                 {
                     this.cola.add(cliente);
                 }
                 this.longitudesCola.add(this.cola.size());
-                //TODO generar siguiente llegada
+                this.etiquetaTamCola.setText("" + this.cola.size());
             }
             menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
+            this.repintar(this.cola);
         }while(this.horaSimulacion < this.tiempoLimiteSimulacion);
         this.hacerEstadistica();
-        //TODO lógica de la simulación
+        javax.swing.JOptionPane.showMessageDialog(null,
+        "Tamaño promedio de la cola: " + this.longitudEsperadaCola + "\n" +
+        "Tiempo de espera promedio para clientes tipo 1: " + this.tiempoEsperaMedio[0] + "\n" +
+        "Tiempo de espera promedio para clientes tipo 2: " + this.tiempoEsperaMedio[1] + "\n" +
+        "Tiempo de espera promedio para clientes tipo 3: " + this.tiempoEsperaMedio[2],
+        "Fin de la simulación: Resultados (en minutos)", javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }
     enum TIEMPO_EVENTO {PROXIMA_SALIDA, LLEGADA_CLIENTE1, LLEGADA_CLIENTE2, LLEGADA_CLIENTE3};
     /**
@@ -299,9 +329,46 @@ public class Simulador implements Runnable
     {
         return this.cola;
     }
+    /**
+     * Redibuja en la pizarra (this.pizarra) según el contenido de
+     * this.simulador.getCola()
+     */
+    public void repintar(ArrayList<Cliente> cola) {
+        Graphics g = dibujo.getGraphics();
+        g.clearRect(0, 0, dibujo.getWidth(), dibujo.getHeight());
+        int pos = 0;
+        int tam = 10;
+        for (Iterator<Cliente> it = cola.iterator(); it.hasNext();) {
+            Cliente cliente = it.next();
+            if (pos + tam <= dibujo.getWidth()) {
+                if (cliente.getTipo() == Cliente.TIPO.UNO) {
+                    g.setColor(Color.RED);
+                    g.fillOval(pos, 0, tam, tam);
+                } else {
+                    if (cliente.getTipo() == Cliente.TIPO.DOS) {
+                        g.setColor(Color.BLUE);
+                        g.fillOval(pos, 0, tam, tam);
+                    } else {
+                        if (cliente.getTipo() == Cliente.TIPO.TRES) {
+                            g.setColor(Color.GREEN);
+                            g.fillOval(pos, 0, tam, tam);
+                        }
+                    }
+                }
+                pos += tam;
+            }
+        }
+    }
     public void run()
     {
-        this.simular();
+        try
+        {
+            this.simular();
+        }
+        catch (InterruptedException ex)
+        {
+            Logger.getLogger(Simulador.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * Esta clase abstrae las propiedades de un cliente. Básicamente el tiempo

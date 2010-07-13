@@ -16,11 +16,11 @@ public class GeneradorAleatorios {
      * producidas por los diferentes métodos de esta clase
      */
     private static long semilla = 4657382;
-    //static java.util.Random generador;
-    private static int mt_index;
-    private static int[] mt_buffer = new int[624];
-
-    private static double convertir(int num) {
+    static java.util.Random generador;
+    {
+    //private static int mt_index;
+    //private static int[] mt_buffer = new int[624];
+    /*private static double convertir(int num) {
         
         if(Integer.signum(num)!=1){
             num*=-1;
@@ -28,9 +28,9 @@ public class GeneradorAleatorios {
         String valor = num+"";
         valor = "0."+valor;
         return Double.parseDouble(valor);
-    }
+    }*/
 
-    public GeneradorAleatorios() {
+    /*public GeneradorAleatorios() {
         java.util.Random r = new java.util.Random();
         for (int i = 0; i < 624; i++) {
             mt_buffer[i] = r.nextInt();
@@ -39,14 +39,16 @@ public class GeneradorAleatorios {
 
         //generador = new java.util.Random();
         //generador.setSeed(semilla);
+    }*/
     }
-
     /**
      * Ajusta un nuevo valor como semilla
      * @param s nueva semilla
      */
     public static void setSemilla(long s) {
         semilla = s;
+        GeneradorAleatorios.generador = new java.util.Random();
+        GeneradorAleatorios.generador.setSeed(s);
     }
 
     /**
@@ -54,15 +56,8 @@ public class GeneradorAleatorios {
      * @return un número pseudo-aleatorio uniforme en [0, 1[
      */
     public static double nextUniforme() {
-        //TODO meter nuestro propio algoritmo para generar aleatorios aquí
-       int seed[] = new int[256];
-        Rand x = new Rand(seed);
-        for (int i = 0; i < 2; ++i) {
-            x.Isaac();
-        }
-
         //código para generar un random uniforme en [0, 1[
-        if (mt_index == 624) {
+        /*if (mt_index == 624) {
             mt_index = 0;
             int i = 0;
             int s;
@@ -78,19 +73,13 @@ public class GeneradorAleatorios {
             s = (mt_buffer[623] & 0x80000000) | (mt_buffer[0] & 0x7FFFFFFF);
             mt_buffer[623] = mt_buffer[396] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
         }
-
         int num = mt_buffer[mt_index++];
         if (Integer.signum(num) != 1) {
             num *= -1;
         }
-
         double valor = convertir(num);
-        return valor;
-        /*
-        java.util.Random generador = new java.util.Random();
-        generador.setSeed(semilla);
+        return valor;*/
         return generador.nextDouble();
-         */
     }
 
     /**
@@ -107,7 +96,8 @@ public class GeneradorAleatorios {
      * @param lambda valor esperado (media)
      * @return un número pseudo-aleatorio uniforfe en [0, 1[
      */
-    public double nextExponencial(double lambda) {
-        return -1 * Math.log(GeneradorAleatorios.nextUniforme()) / lambda;
+    public static double nextExponencial(double lambda)
+    {
+        return -1*Math.log(GeneradorAleatorios.nextUniforme())/lambda;
     }
 }
