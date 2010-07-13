@@ -15,6 +15,12 @@ public class GeneradorAleatorios {
      * producidas por los diferentes métodos de esta clase
      */
     private static long semilla = 4657382;
+    static java.util.Random generador;
+    public GeneradorAleatorios()
+    {
+        generador = new java.util.Random();
+        generador.setSeed(semilla);
+    }
 
     /**
      * Ajusta un nuevo valor como semilla
@@ -30,8 +36,8 @@ public class GeneradorAleatorios {
      */
     public static double nextUniforme()
     {
-        java.util.Random generador = new java.util.Random();
-        generador.setSeed(semilla);
+        //java.util.Random generador = new java.util.Random();
+        //generador.setSeed(semilla);
         return generador.nextDouble();
         //TODO meter nuestro propio algoritmo para generar aleatorios aquí
         /*double resultado = 0;

@@ -2,6 +2,7 @@ package simuladorcolas;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 
 /**
@@ -16,7 +17,7 @@ import java.util.HashMap;
  * para cada cliente individualmente. También el tiempo de la simulación es
  * ajustable.
  */
-public class Simulador
+public class Simulador implements Runnable
 {
     /**
      * Tiempo de llegada esperado de los clientes tipo 1
@@ -70,10 +71,16 @@ public class Simulador
      */
     private final GeneradorAleatorios generador;
 
+    /**
+     * Tamaño esperado de la cola (L)
+     */
     private double longitudEsperadaCola;
-    private double tiempoEsperaMedio1;
-    private double tiempoEsperaMedio2;
-    private double tiempoEsperaMedio3;
+    /**
+     * tiempoEsperaMedio[i] = Tiempo espera medio para clientes tipo i (Wi)
+     */
+    private double[] tiempoEsperaMedio;
+
+    private Semaphore mutex;
     /**
      * Crea un nuevo objeto Simulador indicando la media de los tiempos de
      * llegada para cada cliente, la media del tiempo de atención y el tiempo
@@ -100,8 +107,10 @@ public class Simulador
         this.cola = new ArrayList<Cliente>();
         this.generador = new GeneradorAleatorios();
         generador.setSemilla(System.currentTimeMillis());
-        this.longitudEsperadaCola = this.tiempoEsperaMedio1
-                = this.tiempoEsperaMedio2 = this.tiempoEsperaMedio3 = 0;
+        this.tiempoEsperaMedio = new double[3];
+        this.longitudEsperadaCola = this.tiempoEsperaMedio[0]
+                = this.tiempoEsperaMedio[1] = this.tiempoEsperaMedio[2] = 0;
+        mutex = new Semaphore(1); //solo se ocupa un permiso (el de la interfaz) para pasar
     }
     /**
      * Inicia la simulación
@@ -196,6 +205,7 @@ public class Simulador
             }
             menor = this.getMenor(tiempoSalida, llegada1, llegada2, llegada3);
         }while(this.horaSimulacion < this.tiempoLimiteSimulacion);
+        this.hacerEstadistica();
         //TODO lógica de la simulación
     }
     enum TIEMPO_EVENTO {PROXIMA_SALIDA, LLEGADA_CLIENTE1, LLEGADA_CLIENTE2, LLEGADA_CLIENTE3};
@@ -250,8 +260,24 @@ public class Simulador
             this.longitudEsperadaCola += longitud;
         }
         this.longitudEsperadaCola /= this.longitudesCola.size();
-        //calcular tiempo de espera promedio para cada tipo de cliente
-        //for(ArrayList<)
+        //calcular tiempo de espera promedio para clientes tipo uno
+        for(int uno = 0; uno < this.tiemposEspera.get(Cliente.TIPO.UNO).size(); ++uno )
+        {
+            this.tiempoEsperaMedio[0] += this.tiemposEspera.get(Cliente.TIPO.UNO).get(uno);
+        }
+        this.tiempoEsperaMedio[0] /= this.tiemposEspera.get(Cliente.TIPO.UNO).size();
+        //calcular tiempo de espera promedio para clientes tipo dos
+        for(int dos = 0; dos < this.tiemposEspera.get(Cliente.TIPO.DOS).size(); ++dos )
+        {
+            this.tiempoEsperaMedio[1] += this.tiemposEspera.get(Cliente.TIPO.DOS).get(dos);
+        }
+        this.tiempoEsperaMedio[1] /= this.tiemposEspera.get(Cliente.TIPO.DOS).size();
+        //calcular tiempo de espera promedio para clientes tipo tres
+        for(int tres = 0; tres < this.tiemposEspera.get(Cliente.TIPO.TRES).size(); ++tres )
+        {
+            this.tiempoEsperaMedio[2] += this.tiemposEspera.get(Cliente.TIPO.TRES).get(tres);
+        }
+        this.tiempoEsperaMedio[2] /= this.tiemposEspera.get(Cliente.TIPO.TRES).size();
     }
     public double getLongitudColaEsperada()
     {
@@ -259,15 +285,23 @@ public class Simulador
     }
     public double getTiempoEsperaMedio1()
     {
-        return this.tiempoEsperaMedio1;
+        return this.tiempoEsperaMedio[0];
     }
     public double getTiempoEsperaMedio2()
     {
-        return this.tiempoEsperaMedio2;
+        return this.tiempoEsperaMedio[1];
     }
     public double getTiempoEsperaMedio3()
     {
-        return this.tiempoEsperaMedio3;
+        return this.tiempoEsperaMedio[2];
+    }
+    public ArrayList<Cliente> getCola()
+    {
+        return this.cola;
+    }
+    public void run()
+    {
+        this.simular();
     }
     /**
      * Esta clase abstrae las propiedades de un cliente. Básicamente el tiempo

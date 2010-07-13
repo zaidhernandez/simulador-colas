@@ -79,8 +79,21 @@ public class GeneradorAleatoriosTest {
         System.out.println("nextExponencial");
         GeneradorAleatorios instance = new GeneradorAleatorios();
         double expResult = 0.0;
-        double result = instance.nextExponencial();
-        assertEquals(expResult, result, 0.0);
+        int[] aleatorio = new int[100];
+        for(int i = 0; i < aleatorio.length; ++i)
+        {
+            aleatorio[i] = 0;
+        }
+        for(int i = 0; i < aleatorio.length; ++i)
+        {
+            ++aleatorio[(int)(10*instance.nextExponencial(10.0))];
+        }
+        for(int i = 0; i < aleatorio.length; ++i)
+        {
+            System.out.println(aleatorio[i]);
+        }
+        //double result = instance.nextExponencial();
+        //assertEquals(expResult, result, 0.0);
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
         
