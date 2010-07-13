@@ -50,7 +50,7 @@ public class GeneradorAleatoriosTest {
         }
         suma /= 1000;
         System.out.println("diferencia de media real y teórica (debe tender a cero): " + Math.abs(suma - 1.0 / 2));
-        //assertTrue(Math.abs(suma - 1.0 / 2) < 2.0 / 12); // la media menos miy (0.5) debe ser menor que dos veces la varianza
+        assertTrue(Math.abs(suma - 1.0 / 2) < 2.0 / 12); // la media menos miy (0.5) debe ser menor que dos veces la varianza
     }
 
     /**
@@ -93,5 +93,58 @@ public class GeneradorAleatoriosTest {
         // TODO review the generated test code and remove the default call to fail.
         //fail("The test case is a prototype.");
 
+    }
+
+    /**
+     * Test of setSemilla method, of class GeneradorAleatorios.
+     */
+    @Test
+    public void testSetSemilla() {
+        System.out.println("setSemilla");
+        long s = 0L;
+        GeneradorAleatorios.setSemilla(s);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of nextUniforme method, of class GeneradorAleatorios.
+     */
+    @Test
+    public void testNextUniforme_0args_1() {
+        System.out.println("nextUniforme");
+        double expResult = 0.0;
+        double result = GeneradorAleatorios.nextUniforme();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of nextUniforme method, of class GeneradorAleatorios.
+     */
+    @Test
+    public void testNextUniforme_int_1args() {
+        System.out.println("nextUniforme");
+        int tope = 0;
+        int expResult = 0;
+        int result = GeneradorAleatorios.nextUniforme(tope);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of nextExponencial method, of class GeneradorAleatorios.
+     */
+    @Test
+    public void testNextExponencial_double() {
+        System.out.println("nextExponencial");
+        double lambda = 0.0;
+        double expResult = 0.0;
+        double result = GeneradorAleatorios.nextExponencial(lambda);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }

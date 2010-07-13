@@ -17,7 +17,7 @@ import org.junit.runners.Suite;
  * @author a52566
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({simuladorcolas.MainTest.class,simuladorcolas.GeneradorAleatoriosTest.class})
+@Suite.SuiteClasses({SimuladorTest.class, MainTest.class, RandTest.class, GeneradorAleatoriosTest.class})
 public class SimuladorcolasSuite {
 
     @BeforeClass

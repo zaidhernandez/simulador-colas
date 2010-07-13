@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author a52566
+ * @author Propietario
  */
 public class MainTest {
 

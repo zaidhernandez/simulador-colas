@@ -21,6 +21,7 @@ public class Interfaz extends javax.swing.JFrame {
         this.radioBotonX1.setEnabled(false);
         this.radioBotonX100.setEnabled(false);
         this.radioBotonX1000.setEnabled(false);
+        this.radioBotonX10000.setEnabled(false);
     }
 
     /** This method is called from within the constructor to
@@ -296,6 +297,7 @@ public class Interfaz extends javax.swing.JFrame {
             this.radioBotonX1.setEnabled(true);
             this.radioBotonX100.setEnabled(true);
             this.radioBotonX1000.setEnabled(true);
+            this.radioBotonX10000.setEnabled(true);
             new Thread(this.simulador, "simulador").start();
             this.panelAjustes.setEnabled(false);
             this.textFieldLambda1.setEnabled(false);
