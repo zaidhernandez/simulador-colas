@@ -117,7 +117,7 @@ public class Simulador implements Runnable
         tiemposEspera.put(Cliente.TIPO.TRES, new ArrayList<Double>());
         this.longitudesCola = new ArrayList<Integer>();
         this.cola = new ArrayList<Cliente>();
-        GeneradorAleatorios.setSemilla(System.currentTimeMillis());
+        //GeneradorAleatorios.setSemilla(System.currentTimeMillis());
         this.tiempoEsperaMedio = new double[3];
         this.longitudEsperadaCola = this.tiempoEsperaMedio[0]
                 = this.tiempoEsperaMedio[1] = this.tiempoEsperaMedio[2] = 0;

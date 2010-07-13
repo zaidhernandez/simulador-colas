@@ -1,5 +1,7 @@
 package simuladorcolas;
 
+import java.util.Random;
+
 /**
  *
  * @author Fabián Guevara
@@ -12,8 +14,9 @@ package simuladorcolas;
 public class GeneradorAleatorios {
 
     static java.util.Random generador;
-    private static int indiceDelBuffer;
-    private static int[] bufferAleatorios = new int[624];
+
+    //private static int[] bufferAleatorios = new int[624];
+
     /**
      * Dado un entero n, obtiene un número real que toma a 0 como parte entera y
      * a los dígitos de n como parte flotante
@@ -34,13 +37,13 @@ public class GeneradorAleatorios {
      * @param s nueva semilla
      */
     public static void setSemilla(long s) {
-        GeneradorAleatorios.generador = new java.util.Random();
+        /*GeneradorAleatorios.generador = new java.util.Random();
         GeneradorAleatorios.generador.setSeed(s);
         for (int i = 0; i < 624; i++)
         {
             bufferAleatorios[i] = GeneradorAleatorios.generador.nextInt();
         }
-        indiceDelBuffer = 0;
+        indiceDelBuffer = 0;*/
     }
 
     /**
@@ -51,27 +54,18 @@ public class GeneradorAleatorios {
      */
     public static double nextUniforme() {
         //código para generar un random uniforme en [0, 1[
-        if (indiceDelBuffer == 624) {
-            indiceDelBuffer = 0;
-            int i = 0;
-            int s;
-            for (; i < 624 - 397; i++) {
-                s = (bufferAleatorios[i] & 0x80000000) | (bufferAleatorios[i + 1] & 0x7FFFFFFF);
-                bufferAleatorios[i] = bufferAleatorios[i + 397] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
-            }
-            for (; i < 623; i++) {
-                s = (bufferAleatorios[i] & 0x80000000) | (bufferAleatorios[i + 1] & 0x7FFFFFFF);
-                bufferAleatorios[i] = bufferAleatorios[i - (624 - 397)] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
-            }
-
-            s = (bufferAleatorios[623] & 0x80000000) | (bufferAleatorios[0] & 0x7FFFFFFF);
-            bufferAleatorios[623] = bufferAleatorios[396] ^ (s >> 1) ^ ((s & 1) * 0x9908B0DF);
+        int seed[] = new int[256];
+        Random aleatorio = new Random();
+        for (int i = 0; i < seed.length; i++) {
+            seed[i] = (int)(aleatorio.nextFloat()*10000);
         }
-        int num = bufferAleatorios[indiceDelBuffer++];
-        if (Integer.signum(num) != 1) {
-            num *= -1;
+        Rand x = new Rand(seed);
+        for (int i = 0; i < 2; ++i) {
+            x.Isaac();
         }
-        double valor = convertir(num);
+        double alea = convertir(x.rsl[x.SIZE-1*x.SIZE]);
+        double valor = convertir(x.rsl[(int)alea]);
+        //System.out.println(valor);
         return valor;
        // return generador.nextDouble();
     }
